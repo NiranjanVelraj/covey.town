@@ -15,12 +15,13 @@ export enum Steps {
   deviceSelectionStep,
 }
 
-export default function PreJoinScreens(props: { doLogin: (initData: TownJoinResponse) => Promise<boolean>}) {
+export default function PreJoinScreens(props: {
+  doLogin: (initData: TownJoinResponse) => Promise<boolean>;
+}) {
   const { user } = useAppState();
   const { getAudioAndVideoTracks } = useVideoContext();
 
   const [mediaError, setMediaError] = useState<Error>();
-
 
   useEffect(() => {
     if (!mediaError) {
@@ -32,18 +33,19 @@ export default function PreJoinScreens(props: { doLogin: (initData: TownJoinResp
     }
   }, [getAudioAndVideoTracks, mediaError]);
 
-
   return (
     <IntroContainer>
       <MediaErrorSnackbar error={mediaError} />
-      <Heading as="h2" size="xl">Welcome to Covey.Town!</Heading>
-      <Text p="4">
-        Covey.Town is a social platform that integrates a 2D game-like metaphor with video chat.
-        To get started, setup your camera and microphone, choose a username, and then create a new town
+      <Heading as='h2' size='xl'>
+        Welcome to Covey.Town!
+      </Heading>
+      <Text p='4'>
+        Covey.Town is a social platform that integrates a 2D game-like metaphor with video chat. To
+        get started, setup your camera and microphone, choose a username, and then create a new town
         to hang out in, or join an existing one.
       </Text>
-        <DeviceSelectionScreen />
-        <TownSelection doLogin={props.doLogin} />
+      <DeviceSelectionScreen />
+      <TownSelection doLogin={props.doLogin} />
     </IntroContainer>
   );
 }

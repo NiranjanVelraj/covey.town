@@ -61,7 +61,7 @@ const useStyles = makeStyles((theme: Theme) =>
         gridTemplateColumns: '1fr',
       },
     },
-  })
+  }),
 );
 
 export default function ParticipantList() {
@@ -73,7 +73,8 @@ export default function ParticipantList() {
   const screenShareParticipant = useScreenShareParticipant();
   const mainParticipant = useMainParticipant();
   const nearbyPlayers = useNearbyPlayers();
-  const isRemoteParticipantScreenSharing = screenShareParticipant && screenShareParticipant !== localParticipant;
+  const isRemoteParticipantScreenSharing =
+    screenShareParticipant && screenShareParticipant !== localParticipant;
 
   const classes = useStyles('fullwidth');
   // if (participants.length === 0) return null; // Don't render this component if there are no remote participants.
@@ -116,24 +117,29 @@ export default function ParticipantList() {
         participant={localParticipant}
         isLocalParticipant
         insideGrid={true}
-                // highlight={highlightedProfiles?.includes(localUserProfile.id) ?? false}
+        // highlight={highlightedProfiles?.includes(localUserProfile.id) ?? false}
         slot={0}
       />
       {participants
-        .filter((p) => nearbyPlayers.find((player) => player.id == p.participant.identity))
-        .sort(participantSorter).map((participantWithSlot) => {
+        .filter(p => nearbyPlayers.find(player => player.id == p.participant.identity))
+        .sort(participantSorter)
+        .map(participantWithSlot => {
           const { participant } = participantWithSlot;
           const isSelected = participant === selectedParticipant;
-          const hideParticipant = participant === mainParticipant
-                    && participant !== screenShareParticipant
-                    && !isSelected
-                    && participants.length > 1;
-          const player = nearbyPlayers.find((p) => p.id == participantWithSlot.participant.identity);
-          const remoteProfile = { displayName: player ? player.userName : 'unknown', id: participantWithSlot.participant.identity };
+          const hideParticipant =
+            participant === mainParticipant &&
+            participant !== screenShareParticipant &&
+            !isSelected &&
+            participants.length > 1;
+          const player = nearbyPlayers.find(p => p.id == participantWithSlot.participant.identity);
+          const remoteProfile = {
+            displayName: player ? player.userName : 'unknown',
+            id: participantWithSlot.participant.identity,
+          };
           return (
             <Participant
               key={participant.sid}
-                        // highlight={highlightedProfiles?.includes(participant.identity) ?? false}
+              // highlight={highlightedProfiles?.includes(participant.identity) ?? false}
               participant={participant}
               profile={remoteProfile}
               isSelected={participant === selectedParticipant}
@@ -147,7 +153,8 @@ export default function ParticipantList() {
     </>
   );
 
-  return <main
+  return (
+    <main
       className={clsx(
         classes.gridContainer,
         {
@@ -162,4 +169,5 @@ export default function ParticipantList() {
     >
       <div className={classes.gridInnerContainer}>{participantsEl}</div>
     </main>
+  );
 }

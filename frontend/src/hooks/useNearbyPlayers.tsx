@@ -6,7 +6,7 @@ import NearbyPlayersContext from '../contexts/NearbyPlayersContext';
 /**
  * Returns the list of nearby players, as defined by the app's "nearby" semantics, which might
  * include conversation area boundaries in its logic.
- * 
+ *
  * Components that use this hook will be re-rendered whenever the list of nearby players changes,
  * but NOT when players move (but stay "nearby")
  */

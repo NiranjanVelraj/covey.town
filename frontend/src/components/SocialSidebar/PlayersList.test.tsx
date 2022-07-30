@@ -46,8 +46,8 @@ describe('PlayersInTownList', () => {
     for (let i = 0; i < playersSortedCorrectly.length; i += 1) {
       expect(listEntries[i]).toHaveTextContent(playersSortedCorrectly[i]);
       const parentComponent = listEntries[i].parentNode;
-      if(parentComponent){
-          expect(parentComponent.nodeName).toBe('OL'); // list items expected to be directly nested in an ordered list
+      if (parentComponent) {
+        expect(parentComponent.nodeName).toBe('OL'); // list items expected to be directly nested in an ordered list
       }
     }
   };

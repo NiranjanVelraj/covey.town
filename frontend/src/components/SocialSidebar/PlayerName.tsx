@@ -1,10 +1,9 @@
 import React from 'react';
-import Player from "../../classes/Player"
+import Player from '../../classes/Player';
 
 type PlayerNameProps = {
-    player: Player
+  player: Player;
+};
+export default function PlayerName({ player }: PlayerNameProps): JSX.Element {
+  return <>{player.userName}</>;
 }
-export default function PlayerName({player} : PlayerNameProps): JSX.Element {
-    return <>{player.userName}</>
-}
-

@@ -34,7 +34,10 @@ export default class ConversationArea {
   }
 
   set occupants(newOccupants: string[]) {
-    if(newOccupants.length !== this._occupants.length || !newOccupants.every((val, index) => val === this._occupants[index])){
+    if (
+      newOccupants.length !== this._occupants.length ||
+      !newOccupants.every((val, index) => val === this._occupants[index])
+    ) {
       this._listeners.forEach(listener => listener.onOccupantsChange?.(newOccupants));
       this._occupants = newOccupants;
     }
@@ -45,7 +48,7 @@ export default class ConversationArea {
   }
 
   set topic(newTopic: string | undefined) {
-    if(this._topic !== newTopic){
+    if (this._topic !== newTopic) {
       this._listeners.forEach(listener => listener.onTopicChange?.(newTopic));
     }
     this._topic = newTopic;
@@ -80,15 +83,19 @@ export default class ConversationArea {
     this._listeners = this._listeners.filter(eachListener => eachListener !== listener);
   }
 
-  copy() : ConversationArea{
-    const ret = new ConversationArea(this.label,this._boundingBox,this.topic);
+  copy(): ConversationArea {
+    const ret = new ConversationArea(this.label, this._boundingBox, this.topic);
     ret.occupants = this.occupants.concat([]);
     this._listeners.forEach(listener => ret.addListener(listener));
     return ret;
   }
 
   static fromServerConversationArea(serverArea: ServerConversationArea): ConversationArea {
-    const ret = new ConversationArea(serverArea.label, BoundingBox.fromStruct(serverArea.boundingBox), serverArea.topic);
+    const ret = new ConversationArea(
+      serverArea.label,
+      BoundingBox.fromStruct(serverArea.boundingBox),
+      serverArea.topic,
+    );
     ret.occupants = serverArea.occupantsByID;
     return ret;
   }

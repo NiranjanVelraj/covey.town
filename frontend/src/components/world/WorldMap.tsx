@@ -299,7 +299,7 @@ class CoveyGameScene extends Phaser.Scene {
         this.lastLocation.rotation = primaryDirection || this.lastLocation.rotation || 'front';
         this.lastLocation.moving = isMoving;
         if (this.currentConversationArea) {
-          if(this.currentConversationArea.conversationArea){
+          if (this.currentConversationArea.conversationArea) {
             this.lastLocation.conversationLabel = this.currentConversationArea.label;
           }
           if (
@@ -359,10 +359,10 @@ class CoveyGameScene extends Phaser.Scene {
 
     // Object layers in Tiled let you embed extra info into a map - like a spawn point or custom
     // collision shapes. In the tmx file, there's an object layer with a point named "Spawn Point"
-    const spawnPoint = (map.findObject(
+    const spawnPoint = map.findObject(
       'Objects',
       obj => obj.name === 'Spawn Point',
-    ) as unknown) as Phaser.GameObjects.Components.Transform;
+    ) as unknown as Phaser.GameObjects.Components.Transform;
 
     // Find all of the transporters, add them to the physics engine
     const transporters = map.createFromObjects('Objects', { name: 'transporter' });
@@ -490,7 +490,7 @@ class CoveyGameScene extends Phaser.Scene {
         const transportTargetID = transporter.getData('target') as number;
         const target = map.findObject(
           'Objects',
-          obj => ((obj as unknown) as Phaser.Types.Tilemaps.TiledObject).id === transportTargetID,
+          obj => (obj as unknown as Phaser.Types.Tilemaps.TiledObject).id === transportTargetID,
         );
         if (target && target.x && target.y && this.lastLocation) {
           // Move the player to the target, update lastLocation and send it to other players
@@ -514,7 +514,10 @@ class CoveyGameScene extends Phaser.Scene {
         if (conv?.conversationArea) {
           this.infoTextBox?.setVisible(false);
           const localLastLocation = this.lastLocation;
-          if(localLastLocation && localLastLocation.conversationLabel !== conv.conversationArea.label){
+          if (
+            localLastLocation &&
+            localLastLocation.conversationLabel !== conv.conversationArea.label
+          ) {
             localLastLocation.conversationLabel = conv.conversationArea.label;
             this.emitMovement(localLastLocation);
           }
@@ -600,20 +603,15 @@ class CoveyGameScene extends Phaser.Scene {
 
     // Help text that has a "fixed" position on the screen
     this.add
-      .text(
-        16,
-        16,
-        `Arrow keys to move`,
-        {
-          font: '18px monospace',
-          color: '#000000',
-          padding: {
-            x: 20,
-            y: 10,
-          },
-          backgroundColor: '#ffffff',
+      .text(16, 16, `Arrow keys to move`, {
+        font: '18px monospace',
+        color: '#000000',
+        padding: {
+          x: 20,
+          y: 10,
         },
-      )
+        backgroundColor: '#ffffff',
+      })
       .setScrollFactor(0)
       .setDepth(30);
 
@@ -631,7 +629,7 @@ class CoveyGameScene extends Phaser.Scene {
   pause() {
     if (!this.paused) {
       this.paused = true;
-      if(this.player){
+      if (this.player) {
         this.player?.sprite.anims.stop();
         const body = this.player.sprite.body as Phaser.Physics.Arcade.Body;
         body.setVelocity(0);

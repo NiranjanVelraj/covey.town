@@ -27,14 +27,14 @@ export default class Player {
     return new Player(playerFromServer._id, playerFromServer._userName, playerFromServer.location);
   }
 }
-export type ServerPlayer = { _id: string, _userName: string, location: UserLocation };
+export type ServerPlayer = { _id: string; _userName: string; location: UserLocation };
 
-export type Direction = 'front'|'back'|'left'|'right';
+export type Direction = 'front' | 'back' | 'left' | 'right';
 
 export type UserLocation = {
-  x: number,
-  y: number,
-  rotation: Direction,
-  moving: boolean,
-  conversationLabel?: string
+  x: number;
+  y: number;
+  rotation: Direction;
+  moving: boolean;
+  conversationLabel?: string;
 };

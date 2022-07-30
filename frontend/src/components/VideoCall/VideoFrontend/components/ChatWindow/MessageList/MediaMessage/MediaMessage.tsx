@@ -17,11 +17,11 @@ const useStyles = makeStyles({
     alignItems: 'center',
   },
   mediaInfo: {
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'center',
-    marginLeft: '1.5em',
-    minWidth: 0,
+    'display': 'flex',
+    'flexDirection': 'column',
+    'justifyContent': 'center',
+    'marginLeft': '1.5em',
+    'minWidth': 0,
     '& p': {
       margin: 0,
       fontSize: '12px',

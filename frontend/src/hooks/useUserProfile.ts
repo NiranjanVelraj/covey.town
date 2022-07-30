@@ -5,7 +5,7 @@ import { UserProfile } from '../CoveyTypes';
 
 /**
  * Use this hook to access the current user profile.
- * 
+ *
  * Not currently used; candidate to be refactored away.
  *
  */

@@ -6,21 +6,25 @@ import PlayerName from './PlayerName';
 
 /**
  * Lists the current players in the town, along with the current town's name and ID
- * 
- * See relevant hooks: `usePlayersInTown` and `useCoveyAppState` 
- * 
+ *
+ * See relevant hooks: `usePlayersInTown` and `useCoveyAppState`
+ *
  */
 export default function PlayersInTownList(): JSX.Element {
   const players = usePlayersInTown();
   const { currentTownFriendlyName, currentTownID } = useCoveyAppState();
   const sorted = players.concat([]);
-  sorted.sort((p1, p2) => p1.userName.localeCompare(p2.userName, undefined, {numeric: true, sensitivity: 'base'}));
+  sorted.sort((p1, p2) =>
+    p1.userName.localeCompare(p2.userName, undefined, { numeric: true, sensitivity: 'base' }),
+  );
 
   return (
-    <Box><Tooltip label={`Town ID: ${currentTownID}`}>
-      <Heading as='h2' fontSize='l'>
-        Current town: {currentTownFriendlyName}
-      </Heading></Tooltip>
+    <Box>
+      <Tooltip label={`Town ID: ${currentTownID}`}>
+        <Heading as='h2' fontSize='l'>
+          Current town: {currentTownFriendlyName}
+        </Heading>
+      </Tooltip>
       <OrderedList>
         {sorted.map(player => (
           <ListItem key={player.id}>

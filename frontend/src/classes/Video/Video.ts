@@ -1,7 +1,6 @@
 import DebugLogger from '../DebugLogger';
 import TownsServiceClient, { TownJoinResponse } from '../TownsServiceClient';
 
-
 /* eslint class-methods-use-this: ["error", { "exceptMethods": ["pauseGame", "unPauseGame"] }] */
 export default class Video {
   private static video: Video | null = null;
@@ -26,9 +25,9 @@ export default class Video {
 
   private _isPubliclyListed: boolean | undefined;
 
-  pauseGame: () => void = ()=>{};
+  pauseGame: () => void = () => {};
 
-  unPauseGame: () => void = ()=>{};
+  unPauseGame: () => void = () => {};
 
   constructor(userName: string, coveyTownID: string) {
     this._userName = userName;
@@ -58,18 +57,19 @@ export default class Video {
     if (!this.initialisePromise) {
       this.initialisePromise = new Promise((resolve, reject) => {
         // Request our token to join the town
-        this.townsServiceClient.joinTown({
-          coveyTownID: this._coveyTownID,
-          userName: this._userName,
-        })
-          .then((result) => {
+        this.townsServiceClient
+          .joinTown({
+            coveyTownID: this._coveyTownID,
+            userName: this._userName,
+          })
+          .then(result => {
             this.sessionToken = result.coveySessionToken;
             this.videoToken = result.providerVideoToken;
             this._townFriendlyName = result.friendlyName;
             this._isPubliclyListed = result.isPubliclyListed;
             resolve(result);
           })
-          .catch((err) => {
+          .catch(err => {
             reject(err);
           });
       });
@@ -86,12 +86,17 @@ export default class Video {
           this.initialisePromise = null;
         };
 
-        this.teardownPromise = this.initialisePromise.then(async () => {
-          await doTeardown();
-        }).catch(async (err) => {
-          this.logger.warn("Ignoring video initialisation error as we're teraing down anyway.", err);
-          await doTeardown();
-        });
+        this.teardownPromise = this.initialisePromise
+          .then(async () => {
+            await doTeardown();
+          })
+          .catch(async err => {
+            this.logger.warn(
+              "Ignoring video initialisation error as we're teraing down anyway.",
+              err,
+            );
+            await doTeardown();
+          });
       } else {
         return Promise.resolve();
       }
@@ -116,7 +121,6 @@ export default class Video {
       Video.video = null;
       throw err;
     }
-
 
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore - JB TODO
