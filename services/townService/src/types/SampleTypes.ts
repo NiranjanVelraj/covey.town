@@ -7,7 +7,7 @@ enum FriendRequestStatus {
   rejected,
 }
 
-interface FriendRequest {
+export interface FriendRequest {
   playerId: string,
   status: FriendRequestStatus
 }
