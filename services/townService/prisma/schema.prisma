@@ -13,8 +13,15 @@ datasource db {
 
 model Players {
   id String @id @map("_id") @default(auto()) @db.ObjectId
-  playerName String
+  playerName String @unique
   friendIds String[]
-  sentFriendRequests Json
-  receivedFriendRequests Json
+  sentFriendRequests FriendRequests[]
+}
+
+model FriendRequests {
+  id String @id @map("_id") @default(auto()) @db.ObjectId
+  sendingPlayerName String
+  receivingPlayerName String
+  status String
+  player Players @relation(fields: [sendingPlayerName], references: [playerName])
 }
