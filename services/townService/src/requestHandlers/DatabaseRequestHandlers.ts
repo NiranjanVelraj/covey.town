@@ -1,4 +1,4 @@
-import {  Players } from '@prisma/client';
+import {  FriendRequests, Players } from '@prisma/client';
 import * as databaseController from '../database/DatabaseController';
 import { FriendRequestStatus } from '../Utils';
 
@@ -8,8 +8,11 @@ import { FriendRequestStatus } from '../Utils';
  * @param userName the userName of the player to login
  * @returns the player details or null if player not found
  */
-export async function loginUser(userName: string): Promise<Players | null> {
+export async function loginUser(userName: string): Promise<Players> {
   const userDetails = await databaseController.findPlayerByUserName(userName);
+  if (userDetails === null) {
+    throw new Error('Player details does not exist for logging in');
+  }
   return userDetails;
 }
 
@@ -19,10 +22,10 @@ export async function loginUser(userName: string): Promise<Players | null> {
  * @param userName the userName of the player to signup
  * @returns the details of the player created. Null if player is already present
  */
-export async function signupUser(userName: string): Promise<Players | null> {
+export async function signupUser(userName: string): Promise<Players> {
   const checkUserDetails = await databaseController.findPlayerByUserName(userName);
   if (checkUserDetails === null) {
-    return null;
+    throw new Error('Player details already exist. Cannnot sign up');
   } 
   const newUserDetails: Players = {
     id: '1',
@@ -49,19 +52,18 @@ export async function getAllPlayers(): Promise<Players[]> {
  * @param toPlayerName the userName of the Player receiving the friend request
  * @returns true if the friend request is successful. False otherwise
  */
-export async function sendFriendRequest(fromPlayerName: string, toPlayerName: string): Promise<boolean> {
+export async function sendFriendRequest(fromPlayerName: string, toPlayerName: string): Promise<void> {
   const fromPlayer = await databaseController.findPlayerByUserName(fromPlayerName);
   const toPlayer = await databaseController.findPlayerByUserName(toPlayerName);
   if (fromPlayerName === toPlayerName || fromPlayer === null || toPlayer === null) {
-    return false;
+    throw new Error('Unable to fetch player details. Sending friend request failed.');
   }
-  const friendRequest = databaseController.addFriendRequest({
+  await databaseController.addFriendRequest({
     id: '1',
     sendingPlayerName: fromPlayerName,
     receivingPlayerName: toPlayerName,
     status: FriendRequestStatus.pending,
   });
-  return friendRequest !== null;
 }
 
 /**
@@ -71,26 +73,25 @@ export async function sendFriendRequest(fromPlayerName: string, toPlayerName: st
  * @param toPlayerName the userName of the Player receiving the friend request
  * @returns true if the friend request status update is successful.
  */
-export async function acceptFriendRequest(fromPlayerName: string, toPlayerName: string): Promise<boolean> {
+export async function acceptFriendRequest(fromPlayerName: string, toPlayerName: string): Promise<void> {
   const fromPlayer = await databaseController.findPlayerByUserName(fromPlayerName);
   const toPlayer = await databaseController.findPlayerByUserName(toPlayerName);
   if (fromPlayerName === toPlayerName || fromPlayer === null || toPlayer === null) {
-    return false;
+    throw new Error('Unable to fetch player details. Accepting friend request failed.');
   }
   const friendRequestObject = await databaseController.getFriendRequest(
     fromPlayerName,
     toPlayerName,
   );
-  if (friendRequestObject !== null) {
-    await Promise.all([
-      databaseController.updateFriendRequestStatus(friendRequestObject, FriendRequestStatus.accepted),
-      databaseController.addFriend(fromPlayer, toPlayer.id),
-      databaseController.addFriend(toPlayer, fromPlayer.id),
-    ],
-    );
-    return true;
+  if (friendRequestObject === null) {
+    throw new Error('No friend request found between the players. Accepting request failed.');
   } 
-  return false;
+  await Promise.all([
+    databaseController.updateFriendRequestStatus(friendRequestObject, FriendRequestStatus.accepted),
+    databaseController.addFriend(fromPlayer, toPlayer.id),
+    databaseController.addFriend(toPlayer, fromPlayer.id),
+  ],
+  );
 }
 
 /**
@@ -100,19 +101,53 @@ export async function acceptFriendRequest(fromPlayerName: string, toPlayerName: 
  * @param toPlayerName the userName of the Player receiving the friend request
  * @returns true if the friend request status update is successful.
  */
-export async function rejectFriendRequest(fromPlayerName: string, toPlayerName: string): Promise<boolean> {
+export async function rejectFriendRequest(fromPlayerName: string, toPlayerName: string): Promise<void> {
   const fromPlayer = await databaseController.findPlayerByUserName(fromPlayerName);
   const toPlayer = await databaseController.findPlayerByUserName(toPlayerName);
   if (fromPlayerName === toPlayerName || fromPlayer === null || toPlayer === null) {
-    return false;
+    throw new Error('Unable to fetch player details. Rejecting friend request failed.');
   }
   const friendRequestObject = await databaseController.getFriendRequest(
     fromPlayerName,
     toPlayerName,
   );
-  if (friendRequestObject !== null) {
-    await databaseController.updateFriendRequestStatus(friendRequestObject, FriendRequestStatus.rejected);
-    return true;
+  if (friendRequestObject === null) {
+    throw new Error('No friend request found between the players. Rejecting request failed.');
   } 
-  return false;
+  await databaseController.updateFriendRequestStatus(friendRequestObject, FriendRequestStatus.rejected);
+
+}
+
+/**
+ * Gets all the friend requests sent by the player.
+ * @param fromPlayerName the player sending the friend request
+ * @returns the list of friend requests
+ */
+export async function getSentFriendRequests(fromPlayerName: string): Promise<FriendRequests[]> {
+  const fromPlayer = await databaseController.findPlayerByUserName(fromPlayerName);
+  if (fromPlayer === null) {
+    throw new Error('Player details not found. Getting sent friend requests failed.');
+  }
+  const friendRequests = await databaseController.getSentFriendRequestsStatus(
+    fromPlayer.playerName,
+    FriendRequestStatus.pending,
+  );
+  return friendRequests;
+}
+
+/**
+ * Gets all the friend requests received by the player.
+ * @param toPlayerName the player receiving the friend request
+ * @returns the list of friend requests
+ */
+export async function getReceivedFriendRequests(toPlayerName: string): Promise<FriendRequests[]> {
+  const fromPlayer = await databaseController.findPlayerByUserName(toPlayerName);
+  if (fromPlayer === null) {
+    throw new Error('Player details not found. Getting received friend requests failed.');
+  }
+  const friendRequests = await databaseController.getReceivedFriendRequestsStatus(
+    fromPlayer.playerName,
+    FriendRequestStatus.pending,
+  );
+  return friendRequests;
 }

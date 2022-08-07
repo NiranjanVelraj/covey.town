@@ -174,7 +174,7 @@ export async function updateFriendRequestStatus(friendRequest: FriendRequests, s
  * @param status the status of the friend request to be fetched
  * @returns the list of friend requests or null otherwise
  */
-export async function getSentFriendRequestsStatus(playerName: string, status: string ): Promise <FriendRequests[] | null> {
+export async function getSentFriendRequestsStatus(playerName: string, status: string ): Promise <FriendRequests[]> {
   const sentFriendRequests = await prisma.friendRequests.findMany({
     where: {
       sendingPlayerName: playerName,
@@ -191,7 +191,7 @@ export async function getSentFriendRequestsStatus(playerName: string, status: st
  * @param status the status of the friend request to be fetched
  * @returns the list of friend requests or null otherwise
  */
-export async function getReceivedFriendRequestsStatus(playerName: string, status: string ): Promise <FriendRequests[] | null> {
+export async function getReceivedFriendRequestsStatus(playerName: string, status: string ): Promise <FriendRequests[]> {
   const sentFriendRequests = await prisma.friendRequests.findMany({
     where: {
       receivingPlayerName: playerName,
