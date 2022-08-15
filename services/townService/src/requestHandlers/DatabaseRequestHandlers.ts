@@ -3,17 +3,36 @@ import * as databaseController from '../database/DatabaseController';
 import { FriendRequestStatus } from '../Utils';
 
 /**
+ * Envelope that wraps any response from the server
+ */
+export interface DatabaseResponseEnvelope<T> {
+  databaseError: boolean;
+  isOK: boolean;
+  message?: string;
+  response?: T;
+}
+
+/**
  * Logs in the user and fetches the player details.
  * 
  * @param userName the userName of the player to login
  * @returns the player details or null if player not found
  */
-export async function loginUser(userName: string): Promise<Players> {
+export async function loginUser(userName: string): Promise<DatabaseResponseEnvelope<Players>> {
   const userDetails = await databaseController.findPlayerByUserName(userName);
   if (userDetails === null) {
-    throw new Error('Player details does not exist for logging in');
+    return {
+      databaseError: false,
+      isOK: false,
+      message: 'User details not available in database. Cannot login.',
+      response: undefined,
+    };
   }
-  return userDetails;
+  return {
+    databaseError: false,
+    isOK: true,
+    response: userDetails,
+  };
 }
 
 /**
@@ -22,17 +41,26 @@ export async function loginUser(userName: string): Promise<Players> {
  * @param userName the userName of the player to signup
  * @returns the details of the player created. Null if player is already present
  */
-export async function signupUser(userName: string): Promise<Players> {
-  const checkUserDetails = await databaseController.findPlayerByUserName(userName);
-  if (checkUserDetails === null) {
-    throw new Error('Player details already exist. Cannnot sign up');
+export async function signupUser(userName: string): Promise<DatabaseResponseEnvelope<Players>> {
+  const userDetails = await databaseController.findPlayerByUserName(userName);
+  if (userDetails !== null) {
+    return {
+      databaseError: false,
+      isOK: false,
+      message: 'User details already in database. Cannot signup with the same player name.',
+      response: undefined,
+    };
   } 
-  const newUserDetails: Players = {
+  const newUserDetails = await databaseController.insertPlayer({
     id: '1',
     playerName: userName,
     friendIds: [],
+  });
+  return {
+    databaseError: false,
+    isOK: false,
+    response: newUserDetails,
   };
-  return databaseController.insertPlayer(newUserDetails);
 }
 
 /**
@@ -40,9 +68,13 @@ export async function signupUser(userName: string): Promise<Players> {
  * 
  * @returns the details of all the players who has an account
  */
-export async function getAllPlayers(): Promise<Players[]> {
+export async function getAllPlayers(): Promise<DatabaseResponseEnvelope<Players[]>> {
   const allPlayerDetails = await databaseController.fetchAllPlayers();
-  return allPlayerDetails;
+  return {
+    databaseError: false,
+    isOK: true,
+    response: allPlayerDetails,
+  };
 }
 
 /**
