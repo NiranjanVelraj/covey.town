@@ -23,14 +23,15 @@ import useVideoContext from '../VideoCall/VideoFrontend/hooks/useVideoContext/us
 import Video from '../../classes/Video/Video';
 import { CoveyTownInfo, TownJoinResponse } from '../../classes/TownsServiceClient';
 import useCoveyAppState from '../../hooks/useCoveyAppState';
-import FriendsApi from '../../classes/FriendServiceClient';
+import FriendsApi, { Players } from '../../classes/FriendServiceClient';
 
 interface TownSelectionProps {
   doLogin: (initData: TownJoinResponse) => Promise<boolean>;
+  userName: string;
 }
 
-export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Element {
-  const [userName, setUserName] = useState<string>(Video.instance()?.userName || '');
+export default function TownSelection({ doLogin, userName }: TownSelectionProps): JSX.Element {
+  // const [userName, setUserName] = useState<string>(Video.instance()?.userName || '');
   const [newTownName, setNewTownName] = useState<string>('');
   const [newTownIsPublic, setNewTownIsPublic] = useState<boolean>(true);
   const [townIDToJoin, setTownIDToJoin] = useState<string>('');
@@ -38,6 +39,7 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
   const { connect: videoConnect } = useVideoContext();
   const { apiClient } = useCoveyAppState();
   const toast = useToast();
+  const [friendList, setFriendList] = useState<Players[]>([]);
 
   const updateTownListings = useCallback(() => {
     // console.log(apiClient);
@@ -160,26 +162,28 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
     }
   };
 
+  useEffect(() => {
+    async function getFriendList() {
+      const friendApi = new FriendsApi();
+      const friendDetails = await friendApi.friends({ userName });
+      setFriendList(friendDetails);
+    }
+    getFriendList();
+  }, [userName]);
+
+  function friendsInTown(townId: string) {
+    return friendList
+      .filter(friendDetails => friendDetails.currentTownId === townId)
+      .map(friendsInsideTown => {
+        const { playerName } = friendsInsideTown;
+        return <span key={playerName}>{playerName}</span>;
+      });
+  }
+
   return (
     <>
       <form>
         <Stack>
-          <Box p='4' borderWidth='1px' borderRadius='lg'>
-            <Heading as='h2' size='lg'>
-              Select a username
-            </Heading>
-
-            <FormControl>
-              <FormLabel htmlFor='name'>Name</FormLabel>
-              <Input
-                autoFocus
-                name='name'
-                placeholder='Your name'
-                value={userName}
-                onChange={event => setUserName(event.target.value)}
-              />
-            </FormControl>
-          </Box>
           <Box borderWidth='1px' borderRadius='lg'>
             <Heading p='4' as='h2' size='lg'>
               Create a New Town
@@ -252,6 +256,7 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
                     <Th>Town Name</Th>
                     <Th>Town ID</Th>
                     <Th>Activity</Th>
+                    <Th>Friends</Th>
                   </Tr>
                 </Thead>
                 <Tbody>
@@ -267,6 +272,7 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
                           Connect
                         </Button>
                       </Td>
+                      <Td>{friendsInTown(town.coveyTownID)}</Td>
                     </Tr>
                   ))}
                 </Tbody>

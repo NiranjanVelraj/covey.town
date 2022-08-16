@@ -25,15 +25,13 @@ export default function FriendListShow(props: { playerName: string }) {
             <Tr>
               <Th>Friend Name</Th>
               <Th>Town ID</Th>
-              <Th>Details</Th>
             </Tr>
           </Thead>
           <Tbody>
             {friendList.map((eachFriend, index) => (
               <Tr key={index}>
                 <Td role='cell'>{eachFriend.playerName}</Td>
-                <Td role='cell'></Td>
-                <Td role='cell'></Td>
+                <Td role='cell'>{eachFriend.currentTownId}</Td>
               </Tr>
             ))}
           </Tbody>

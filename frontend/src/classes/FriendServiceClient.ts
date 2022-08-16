@@ -18,6 +18,7 @@ export type Players = {
   id: string;
   playerName: string;
   friendIds: string[];
+  currentTownId: string;
 };
 
 /**

@@ -49,7 +49,7 @@ export default function PreJoinScreens(props: {
         to hang out in, or join an existing one.
       </Text>
       <DeviceSelectionScreen />
-      <TownSelection doLogin={props.doLogin} />
+      <TownSelection doLogin={props.doLogin} userName={props.userName} />
       <FriendListShow playerName={props.userName} />
       <FriendRequestList playerName={props.userName} />
       <FindFriends playerName={props.userName} />
