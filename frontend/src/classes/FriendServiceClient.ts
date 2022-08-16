@@ -13,7 +13,6 @@ export interface DatabaseResponseEnvelope<T> {
 
 /**
  * Model Players
- *
  */
 export type Players = {
   id: string;
@@ -21,8 +20,32 @@ export type Players = {
   friendIds: string[];
 };
 
+/**
+ * Model FriendRequests
+ *
+ */
+export type FriendRequests = {
+  id: string;
+  sendingPlayerName: string;
+  receivingPlayerName: string;
+  status: string;
+};
+
 export type UserCheckDetails = {
   userName: string;
+};
+
+export type FriendDetailInfo = {
+  fromPlayerName: string;
+  toPlayerName: string;
+};
+
+export type SentFriendRequestInfo = {
+  fromPlayerName: string;
+};
+
+export type ReceivedFriendRequestInfo = {
+  toPlayerName: string;
 };
 
 export default class FriendServiceClient {
@@ -81,6 +104,48 @@ export default class FriendServiceClient {
   async signupUser(requestData: UserCheckDetails): Promise<Players> {
     const responseWrapper = await this._axios.post<DatabaseResponseEnvelope<Players>>(
       `/signup/${requestData.userName}`,
+    );
+    return FriendServiceClient.unwrapOrThrowError(responseWrapper);
+  }
+
+  /**
+   * Sends a friend request to the user from one player to another player.
+   */
+  async sendFriendRequest(requestData: FriendDetailInfo): Promise<Players> {
+    const responseWrapper = await this._axios.post<DatabaseResponseEnvelope<Players>>(
+      `/friends/friendRequest`,
+      requestData,
+    );
+    return FriendServiceClient.unwrapOrThrowError(responseWrapper);
+  }
+
+  /**
+   * Fetch the list of sent friend requests from a player.
+   */
+  async sentFriendRequests(requestData: SentFriendRequestInfo): Promise<FriendRequests[]> {
+    const responseWrapper = await this._axios.get<DatabaseResponseEnvelope<FriendRequests[]>>(
+      `/friendRequest/sent/${requestData.fromPlayerName}`,
+    );
+    return FriendServiceClient.unwrapOrThrowError(responseWrapper);
+  }
+
+  /**
+   * Fetch the list of received friend requests to a player.
+   */
+  async receivedFriendRequests(requestData: ReceivedFriendRequestInfo): Promise<FriendRequests[]> {
+    const responseWrapper = await this._axios.get<DatabaseResponseEnvelope<FriendRequests[]>>(
+      `/friendRequest/received/${requestData.toPlayerName}`,
+    );
+    return FriendServiceClient.unwrapOrThrowError(responseWrapper);
+  }
+
+  /**
+   * Fetch the list of received friend requests to a player.
+   */
+  async acceptFreindRequest(requestData: FriendDetailInfo): Promise<boolean> {
+    const responseWrapper = await this._axios.put<DatabaseResponseEnvelope<boolean>>(
+      `/friends/friendRequest/accept`,
+      requestData,
     );
     return FriendServiceClient.unwrapOrThrowError(responseWrapper);
   }

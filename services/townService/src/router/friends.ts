@@ -99,9 +99,9 @@ export default function addFriendRoutes(http: Server, app: Express): io.Server {
   /**
    * Get list of sent friend requests by the player.
    */
-  app.get('/friendRequest/sent', express.json(), async (req, res) => {
+  app.get('/friendRequest/sent/:fromPlayerName', express.json(), async (req, res) => {
     try {
-      const result = await databaseController.getSentFriendRequests(req.body.fromPlayerName);
+      const result = await databaseController.getSentFriendRequests(req.params.fromPlayerName);
       res.status(StatusCodes.OK).json(result);
     } catch (err) {
       logError(err);
@@ -114,9 +114,9 @@ export default function addFriendRoutes(http: Server, app: Express): io.Server {
   /**
    * Get list of received friend requests by the player.
    */
-  app.get('/friendRequest/received', express.json(), async (req, res) => {
+  app.get('/friendRequest/received/:toPlayerName', express.json(), async (req, res) => {
     try {
-      const result = await databaseController.getReceivedFriendRequests(req.body.toPlayerName);
+      const result = await databaseController.getReceivedFriendRequests(req.params.toPlayerName);
       res.status(StatusCodes.OK).json(result);
     } catch (err) {
       logError(err);

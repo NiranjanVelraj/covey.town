@@ -102,7 +102,7 @@ export default function Login({ doLogin }: LoginProps): JSX.Element {
           </Flex>
         </Flex>
       ) : (
-        <PreJoinScreens doLogin={doLogin} />
+        <PreJoinScreens doLogin={doLogin} userName={userName} />
       )}
     </>
   );
