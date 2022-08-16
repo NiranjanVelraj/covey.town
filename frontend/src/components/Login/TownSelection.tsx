@@ -23,6 +23,7 @@ import useVideoContext from '../VideoCall/VideoFrontend/hooks/useVideoContext/us
 import Video from '../../classes/Video/Video';
 import { CoveyTownInfo, TownJoinResponse } from '../../classes/TownsServiceClient';
 import useCoveyAppState from '../../hooks/useCoveyAppState';
+import FriendsApi from '../../classes/FriendServiceClient';
 
 interface TownSelectionProps {
   doLogin: (initData: TownJoinResponse) => Promise<boolean>;
@@ -72,6 +73,20 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
           return;
         }
         const initData = await Video.setup(userName, coveyRoomID);
+
+        const friendApi = new FriendsApi();
+        const resetTownOfPlayer = async () => {
+          await friendApi.updatePlayerTown({
+            playerName: userName,
+            townId: '',
+          });
+        };
+        await friendApi.updatePlayerTown({
+          playerName: userName,
+          townId: coveyRoomID,
+        });
+        window.removeEventListener('playerDisconnected', resetTownOfPlayer);
+        window.addEventListener('playerDisconnected', resetTownOfPlayer);
 
         const loggedIn = await doLogin(initData);
         if (loggedIn) {
@@ -248,8 +263,7 @@ export default function TownSelection({ doLogin }: TownSelectionProps): JSX.Elem
                         {town.currentOccupancy}/{town.maximumOccupancy}
                         <Button
                           onClick={() => handleJoin(town.coveyTownID)}
-                          disabled={town.currentOccupancy >= town.maximumOccupancy}
-                        >
+                          disabled={town.currentOccupancy >= town.maximumOccupancy}>
                           Connect
                         </Button>
                       </Td>

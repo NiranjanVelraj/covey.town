@@ -75,8 +75,8 @@ export default function addFriendRoutes(http: Server, app: Express): io.Server {
    */
   app.post('/friends/friendRequest', express.json(), async (req, res) => {
     try {
-      await databaseController.sendFriendRequest(req.body.fromPlayerName, req.body.toPlayerName);
-      res.status(StatusCodes.OK);
+      const result = await databaseController.sendFriendRequest(req.body.fromPlayerName, req.body.toPlayerName);
+      res.status(StatusCodes.OK).json(result);
     } catch (err) {
       logError(err);
       res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
@@ -90,8 +90,8 @@ export default function addFriendRoutes(http: Server, app: Express): io.Server {
    */
   app.put('/friends/friendRequest/accept', express.json(), async (req, res) => {
     try {
-      await databaseController.acceptFriendRequest(req.body.fromPlayerName, req.body.toPlayerName);
-      res.status(StatusCodes.OK);
+      const result = await databaseController.acceptFriendRequest(req.body.fromPlayerName, req.body.toPlayerName);
+      res.status(StatusCodes.OK).json(result);
     } catch (err) {
       logError(err);
       res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
@@ -105,8 +105,8 @@ export default function addFriendRoutes(http: Server, app: Express): io.Server {
    */
   app.put('/friends/friendRequest/reject', express.json(), async (req, res) => {
     try {
-      await databaseController.rejectFriendRequest(req.body.fromPlayerName, req.body.toPlayerName);
-      res.status(StatusCodes.OK);
+      const result = await databaseController.rejectFriendRequest(req.body.fromPlayerName, req.body.toPlayerName);
+      res.status(StatusCodes.OK).json(result);
     } catch (err) {
       logError(err);
       res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
@@ -136,6 +136,21 @@ export default function addFriendRoutes(http: Server, app: Express): io.Server {
   app.get('/friendRequest/received/:toPlayerName', express.json(), async (req, res) => {
     try {
       const result = await databaseController.getReceivedFriendRequests(req.params.toPlayerName);
+      res.status(StatusCodes.OK).json(result);
+    } catch (err) {
+      logError(err);
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+        message: 'Internal server error, please see log in server for more details',
+      });
+    }
+  });
+
+  /**
+   * Update the town of the player.
+   */
+  app.put('/player/town', express.json(), async (req, res) => {
+    try {
+      const result = await databaseController.updateTownDetailsOfPlayer(req.body.playerName, req.body.townId);
       res.status(StatusCodes.OK).json(result);
     } catch (err) {
       logError(err);
