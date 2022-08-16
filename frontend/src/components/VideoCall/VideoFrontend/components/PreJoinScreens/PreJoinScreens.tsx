@@ -9,6 +9,7 @@ import useVideoContext from '../../hooks/useVideoContext/useVideoContext';
 import { TownJoinResponse } from '../../../../../classes/TownsServiceClient';
 import { Heading, Text } from '@chakra-ui/react';
 import TownSelection from '../../../../Login/TownSelection';
+import FindFriends from './FindFriends/FindFriends';
 
 export enum Steps {
   roomNameStep,
@@ -17,6 +18,7 @@ export enum Steps {
 
 export default function PreJoinScreens(props: {
   doLogin: (initData: TownJoinResponse) => Promise<boolean>;
+  userName: string;
 }) {
   const { user } = useAppState();
   const { getAudioAndVideoTracks } = useVideoContext();
@@ -46,6 +48,7 @@ export default function PreJoinScreens(props: {
       </Text>
       <DeviceSelectionScreen />
       <TownSelection doLogin={props.doLogin} />
+      <FindFriends playerName={props.userName} />
     </IntroContainer>
   );
 }
