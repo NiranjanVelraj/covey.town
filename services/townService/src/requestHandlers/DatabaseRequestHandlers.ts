@@ -220,23 +220,38 @@ export async function getReceivedFriendRequests(toPlayerName: string): Promise<D
   };
 }
 
-export async function getFriendLists(playerName: string): Promise<string[]> {
+/**
+ * @param playerName the playername for whom the friends have to be retreived
+ * @returns list of players who are friends with the player
+ */
+export async function getFriendLists(playerName: string): Promise<DatabaseResponseEnvelope<Players[]>> {
   const foundPlayer = await databaseController.findPlayerByUserName(playerName);
   if (foundPlayer === null) {
-    throw new Error('There is no player with such player name.');
+    return {
+      databaseError: false,
+      isOK: false,
+      message:'There is no player with such player name',
+    };
   }
   const friendLists = foundPlayer.friendIds;
   if (friendLists.length === 0) {
-    return [];
+    return {
+      databaseError: false,
+      isOK: true,
+      response: [],
+    };
   }
   const friendNames = friendLists.map(async eachId => {
     const eachPlayer = await databaseController.findPlayerById(eachId);
-
     if (eachPlayer === null) {
       throw new Error('The friend id list constain an invalid id.');
     }
-    return eachPlayer.playerName;
+    return eachPlayer;
   });
-  const names = await Promise.all(friendNames);
-  return names;
+  const friendDetails = await Promise.all(friendNames);
+  return {
+    databaseError: false,
+    isOK: true,
+    response: friendDetails,
+  };
 }

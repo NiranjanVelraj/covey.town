@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Box, Button, Flex, FormControl, FormLabel, Heading, Input } from '@chakra-ui/react';
-import FriendsApi, { FriendRequests, Players } from '../../../../../../classes/FriendServiceClient';
+import FriendsApi, { FriendRequests } from '../../../../../../classes/FriendServiceClient';
 
 export default function FindFriends(props: { playerName: string }) {
   const [findPlayerName, setFindPlayerName] = useState<string>('');
