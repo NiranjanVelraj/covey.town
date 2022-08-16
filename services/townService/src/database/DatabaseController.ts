@@ -46,6 +46,22 @@ export async function deletePlayer(id: string): Promise<Players> {
   return deletedPlayer;
 }
 
+
+/**
+ * Finds the player name based on the player id.  
+ * @param id player id
+ * @returns the player name from the databse or null if not found.
+ */
+export async function findPlayerNameById(id: string): Promise<string | undefined> {
+  const foundPlayer = await prisma.players.findUnique({
+    where: {
+      id: id,
+    },
+  },
+  );
+  return foundPlayer?.playerName;
+}
+
 /**
  * Finds the player from the database based on the id.
  * 

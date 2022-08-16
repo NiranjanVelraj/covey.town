@@ -37,6 +37,24 @@ export default function addFriendRoutes(http: Server, app: Express): io.Server {
   });
 
   /**
+   * Fetches the friends lists from the database.
+   */
+  app.get('/friends/:playerName', express.json(), async (_req, res) => {
+    try {
+      const result = await databaseController.getFriendLists(_req.params.playerName);
+      res.status(StatusCodes.OK).json(result);
+    } catch (err) {
+      logError(err);
+      res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+        message: 'Internal server error, please see log in server for more details',
+      });
+    }
+  });
+
+
+ 
+
+  /**
    * Sign up the player and returns the details of the user.
    */
   app.post('/signup/:playerName', express.json(), async (_req, res) => {
@@ -50,6 +68,7 @@ export default function addFriendRoutes(http: Server, app: Express): io.Server {
       });
     }
   });
+
 
   /**
    * Create a new friend request.
