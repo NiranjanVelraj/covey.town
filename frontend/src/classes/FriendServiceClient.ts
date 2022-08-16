@@ -109,6 +109,16 @@ export default class FriendServiceClient {
   }
 
   /**
+   * Fetch the list of friends for the player.
+   */
+  async friends(requestData: UserCheckDetails): Promise<Players[]> {
+    const responseWrapper = await this._axios.get<DatabaseResponseEnvelope<Players[]>>(
+      `/friends/${requestData.userName}`,
+    );
+    return FriendServiceClient.unwrapOrThrowError(responseWrapper);
+  }
+
+  /**
    * Sends a friend request to the user from one player to another player.
    */
   async sendFriendRequest(requestData: FriendDetailInfo): Promise<Players> {

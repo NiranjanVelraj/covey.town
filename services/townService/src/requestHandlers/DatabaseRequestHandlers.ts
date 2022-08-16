@@ -1,4 +1,4 @@
-import {  FriendRequests, Players } from '@prisma/client';
+import { FriendRequests, Players } from '@prisma/client';
 import * as databaseController from '../database/DatabaseController';
 import { FriendRequestStatus } from '../Utils';
 
@@ -14,7 +14,7 @@ export interface DatabaseResponseEnvelope<T> {
 
 /**
  * Logs in the user and fetches the player details.
- * 
+ *
  * @param userName the userName of the player to login
  * @returns the player details or null if player not found
  */
@@ -37,7 +37,7 @@ export async function loginUser(userName: string): Promise<DatabaseResponseEnvel
 
 /**
  * Checks if the user is already present. If not, creates a new entry for the player.
- * 
+ *
  * @param userName the userName of the player to signup
  * @returns the details of the player created. Null if player is already present
  */
@@ -50,7 +50,7 @@ export async function signupUser(userName: string): Promise<DatabaseResponseEnve
       message: 'User details already in database. Cannot signup with the same player name.',
       response: undefined,
     };
-  } 
+  }
   const newUserDetails = await databaseController.insertPlayer({
     id: '1',
     playerName: userName,
@@ -65,7 +65,7 @@ export async function signupUser(userName: string): Promise<DatabaseResponseEnve
 
 /**
  * Gets all the player details from the database.
- * 
+ *
  * @returns the details of all the players who has an account
  */
 export async function getAllPlayers(): Promise<DatabaseResponseEnvelope<Players[]>> {
@@ -79,7 +79,7 @@ export async function getAllPlayers(): Promise<DatabaseResponseEnvelope<Players[
 
 /**
  * Updates the database to reflect the friend request status.
- * 
+ *
  * @param fromPlayerName the userName of the Player sending the friend request
  * @param toPlayerName the userName of the Player receiving the friend request
  * @returns true if the friend request is successful. False otherwise
@@ -127,7 +127,7 @@ export async function acceptFriendRequest(fromPlayerName: string, toPlayerName: 
   );
   if (friendRequestObject === null) {
     throw new Error('No friend request found between the players. Accepting request failed.');
-  } 
+  }
   await Promise.all([
     databaseController.updateFriendRequestStatus(friendRequestObject, FriendRequestStatus.accepted),
     databaseController.addFriend(fromPlayer, toPlayer.id),
@@ -143,12 +143,15 @@ export async function acceptFriendRequest(fromPlayerName: string, toPlayerName: 
 
 /**
  * Updates the database to reflect the of the friend request rejection.
- * 
+ *
  * @param fromPlayerName the userName of the Player sending the friend request
  * @param toPlayerName the userName of the Player receiving the friend request
  * @returns true if the friend request status update is successful.
  */
-export async function rejectFriendRequest(fromPlayerName: string, toPlayerName: string): Promise<void> {
+export async function rejectFriendRequest(
+  fromPlayerName: string,
+  toPlayerName: string,
+): Promise<void> {
   const fromPlayer = await databaseController.findPlayerByUserName(fromPlayerName);
   const toPlayer = await databaseController.findPlayerByUserName(toPlayerName);
   if (fromPlayerName === toPlayerName || fromPlayer === null || toPlayer === null) {
@@ -160,9 +163,11 @@ export async function rejectFriendRequest(fromPlayerName: string, toPlayerName: 
   );
   if (friendRequestObject === null) {
     throw new Error('No friend request found between the players. Rejecting request failed.');
-  } 
-  await databaseController.updateFriendRequestStatus(friendRequestObject, FriendRequestStatus.rejected);
-
+  }
+  await databaseController.updateFriendRequestStatus(
+    friendRequestObject,
+    FriendRequestStatus.rejected,
+  );
 }
 
 /**
@@ -212,5 +217,41 @@ export async function getReceivedFriendRequests(toPlayerName: string): Promise<D
     databaseError: false,
     isOK: true,
     response: friendRequests,
+  };
+}
+
+/**
+ * @param playerName the playername for whom the friends have to be retreived
+ * @returns list of players who are friends with the player
+ */
+export async function getFriendLists(playerName: string): Promise<DatabaseResponseEnvelope<Players[]>> {
+  const foundPlayer = await databaseController.findPlayerByUserName(playerName);
+  if (foundPlayer === null) {
+    return {
+      databaseError: false,
+      isOK: false,
+      message:'There is no player with such player name',
+    };
+  }
+  const friendLists = foundPlayer.friendIds;
+  if (friendLists.length === 0) {
+    return {
+      databaseError: false,
+      isOK: true,
+      response: [],
+    };
+  }
+  const friendNames = friendLists.map(async eachId => {
+    const eachPlayer = await databaseController.findPlayerById(eachId);
+    if (eachPlayer === null) {
+      throw new Error('The friend id list constain an invalid id.');
+    }
+    return eachPlayer;
+  });
+  const friendDetails = await Promise.all(friendNames);
+  return {
+    databaseError: false,
+    isOK: true,
+    response: friendDetails,
   };
 }

@@ -9,6 +9,7 @@ import useVideoContext from '../../hooks/useVideoContext/useVideoContext';
 import { TownJoinResponse } from '../../../../../classes/TownsServiceClient';
 import { Heading, Text } from '@chakra-ui/react';
 import TownSelection from '../../../../Login/TownSelection';
+import FriendListShow from './FriendListShow';
 import FindFriends from './FindFriends/FindFriends';
 
 export enum Steps {
@@ -48,6 +49,7 @@ export default function PreJoinScreens(props: {
       </Text>
       <DeviceSelectionScreen />
       <TownSelection doLogin={props.doLogin} />
+      <FriendListShow playerName={props.userName} />
       <FindFriends playerName={props.userName} />
     </IntroContainer>
   );
