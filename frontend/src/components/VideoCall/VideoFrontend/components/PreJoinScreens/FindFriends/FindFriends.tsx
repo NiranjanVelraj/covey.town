@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Box, Button, Flex, FormControl, FormLabel, Heading, Input } from '@chakra-ui/react';
-import FriendsApi, { FriendRequests } from '../../../../../../classes/FriendServiceClient';
+import FriendsApi, { FriendRequests, Players } from '../../../../../../classes/FriendServiceClient';
 
 export default function FindFriends(props: { playerName: string }) {
   const [findPlayerName, setFindPlayerName] = useState<string>('');
@@ -61,6 +61,13 @@ export default function FindFriends(props: { playerName: string }) {
   };
 
   /**
+   * @returns true if the playerName is present in the friend list of the player.
+   */
+  const isFriend = function (playerName: string, friends: Players[]): boolean {
+    return friends.some(friendDetails => friendDetails.playerName === playerName);
+  };
+
+  /**
    * Fetches the list of players from the database and updates the state.
    */
   useEffect(() => {
@@ -70,6 +77,7 @@ export default function FindFriends(props: { playerName: string }) {
       const receivedRequests = await friendApi.receivedFriendRequests({
         toPlayerName: props.playerName,
       });
+      const friends = await friendApi.friends({ userName: props.playerName });
       const playerStatus = allPlayersDetails.map(player => {
         let playerStatus = PlayerStatus.none;
         if (player.playerName === props.playerName) {
@@ -78,6 +86,8 @@ export default function FindFriends(props: { playerName: string }) {
           playerStatus = PlayerStatus.sentRequest;
         } else if (receivedRequest(player.playerName, receivedRequests)) {
           playerStatus = PlayerStatus.receivedRequest;
+        } else if (isFriend(player.playerName, friends)) {
+          playerStatus = PlayerStatus.friend;
         }
         return {
           playerName: player.playerName,
