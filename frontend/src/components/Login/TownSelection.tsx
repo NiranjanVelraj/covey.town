@@ -18,6 +18,7 @@ import {
   Thead,
   Tr,
   useToast,
+  Text,
 } from '@chakra-ui/react';
 import useVideoContext from '../VideoCall/VideoFrontend/hooks/useVideoContext/useVideoContext';
 import Video from '../../classes/Video/Video';
@@ -172,12 +173,20 @@ export default function TownSelection({
    * @returns list of friend names who are present in the town
    */
   function friendsInTown(townId: string) {
-    return friendList
-      .filter(friendDetails => friendDetails.currentTownId === townId)
-      .map(friendsInsideTown => {
-        const { playerName } = friendsInsideTown;
-        return <span key={playerName}>{playerName}</span>;
-      });
+    const friendsIntoInTown = friendList.filter(
+      friendDetails => friendDetails.currentTownId === townId,
+    );
+    if (friendsIntoInTown.length === 0) {
+      return <Text>-</Text>;
+    }
+    return (
+      <Flex direction='column'>
+        {friendsIntoInTown.map(friendsInsideTown => {
+          const { playerName } = friendsInsideTown;
+          return <Text key={playerName}>{playerName}</Text>;
+        })}
+      </Flex>
+    );
   }
 
   return (
@@ -255,8 +264,8 @@ export default function TownSelection({
                   <Tr>
                     <Th>Town Name</Th>
                     <Th>Town ID</Th>
+                    <Th>Friends In Town</Th>
                     <Th>Activity</Th>
-                    <Th>Friends</Th>
                   </Tr>
                 </Thead>
                 <Tbody>
@@ -264,6 +273,7 @@ export default function TownSelection({
                     <Tr key={town.coveyTownID}>
                       <Td role='cell'>{town.friendlyName}</Td>
                       <Td role='cell'>{town.coveyTownID}</Td>
+                      <Td role='cell'>{friendsInTown(town.coveyTownID)}</Td>
                       <Td role='cell'>
                         {town.currentOccupancy}/{town.maximumOccupancy}
                         <Button
@@ -272,7 +282,6 @@ export default function TownSelection({
                           Connect
                         </Button>
                       </Td>
-                      <Td>{friendsInTown(town.coveyTownID)}</Td>
                     </Tr>
                   ))}
                 </Tbody>

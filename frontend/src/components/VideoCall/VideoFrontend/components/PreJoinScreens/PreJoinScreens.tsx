@@ -95,6 +95,17 @@ export default function PreJoinScreens(props: {
     });
   };
 
+  /**
+   * Accepts a friend request to the specified player.
+   * @param fromPlayerName the player to whom the request is sent
+   */
+  const rejectFreindRequest = async (fromPlayerName: string) => {
+    await friendApi.rejectFreindRequest({
+      fromPlayerName,
+      toPlayerName: props.userName,
+    });
+  };
+
   useEffect(() => {
     if (!mediaError) {
       getAudioAndVideoTracks().catch(error => {
@@ -109,7 +120,7 @@ export default function PreJoinScreens(props: {
     <IntroContainer>
       <MediaErrorSnackbar error={mediaError} />
       <Heading as='h2' size='xl'>
-        Welcome to Covey.Town!
+        Welcome to Covey.Town! {props.userName}
       </Heading>
       <Text p='4'>
         Covey.Town is a social platform that integrates a 2D game-like metaphor with video chat. To
@@ -117,14 +128,7 @@ export default function PreJoinScreens(props: {
         to hang out in, or join an existing one.
       </Text>
       <DeviceSelectionScreen />
-      <TownSelection doLogin={props.doLogin} userName={props.userName} friendList={friends} />
-      <FriendList friendList={friends} />
-      <FriendRequestList
-        sentFriendRequests={sentFriendRequest}
-        receivedFriendRequests={receivedFriendRequest}
-        acceptFriendRequest={acceptFriendRequest}
-      />
-      <FindFriends
+      <FriendList
         playerName={props.userName}
         allPlayers={allPlayers}
         friends={friends}
@@ -132,6 +136,13 @@ export default function PreJoinScreens(props: {
         sentFriendRequests={sentFriendRequest}
         sendFriendRequest={sendFriendRequest}
         acceptFriendRequest={acceptFriendRequest}
+      />
+      <TownSelection doLogin={props.doLogin} userName={props.userName} friendList={friends} />
+      <FriendRequestList
+        sentFriendRequests={sentFriendRequest}
+        receivedFriendRequests={receivedFriendRequest}
+        acceptFriendRequest={acceptFriendRequest}
+        rejectFriendRequest={rejectFreindRequest}
       />
     </IntroContainer>
   );

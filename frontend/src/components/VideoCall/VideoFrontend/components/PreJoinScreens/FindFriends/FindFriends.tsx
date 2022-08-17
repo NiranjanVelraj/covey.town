@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Button, Flex, FormControl, FormLabel, Heading, Input } from '@chakra-ui/react';
+import { Box, Button, Flex, FormControl, Input, Text } from '@chakra-ui/react';
 import FriendsApi, { FriendRequests, Players } from '../../../../../../classes/FriendServiceClient';
 
 export default function FindFriends(props: {
@@ -94,19 +94,15 @@ export default function FindFriends(props: {
 
   return (
     <Box p='4' borderWidth='1px' borderRadius='lg'>
-      <Heading as='h2' size='lg'>
-        Find other Players
-      </Heading>
-
       <FormControl>
         <Input
           autoFocus
           name='playerName'
-          placeholder='Find player'
+          placeholder='Search Player'
           value={findPlayerName}
           onChange={event => setFindPlayerName(event.target.value)}
         />
-        <Box maxH='500px' overflowY='scroll'>
+        <Box h='250px' overflowY='auto' p='2'>
           <Flex flexDirection='column'>
             {filteredPlayers.map(player => {
               return (
@@ -115,18 +111,27 @@ export default function FindFriends(props: {
                   justifyContent='space-between'
                   height={12}
                   key={player.playerName}>
-                  <span> {player.playerName}</span>
-                  {player.status === PlayerStatus.none && (
-                    <Button onClick={() => props.sendFriendRequest(player.playerName)}>
-                      Send Request
-                    </Button>
-                  )}
-                  {player.status === PlayerStatus.sentRequest && <span>Request sent</span>}
-                  {player.status === PlayerStatus.receivedRequest && (
-                    <Button onClick={() => props.acceptFriendRequest(player.playerName)}>
-                      Accept Request
-                    </Button>
-                  )}
+                  <Text> {player.playerName}</Text>
+                  <Flex alignItems='center' justifyContent='center' width='40%'>
+                    {player.status === PlayerStatus.none && (
+                      <Button
+                        colorScheme='teal'
+                        variant='outline'
+                        onClick={() => props.sendFriendRequest(player.playerName)}>
+                        Send Request
+                      </Button>
+                    )}
+                    {player.status === PlayerStatus.sentRequest && (
+                      <Text color='teal.500'>Request sent</Text>
+                    )}
+                    {player.status === PlayerStatus.receivedRequest && (
+                      <Button
+                        colorScheme='blue'
+                        onClick={() => props.acceptFriendRequest(player.playerName)}>
+                        Accept Request
+                      </Button>
+                    )}
+                  </Flex>
                 </Flex>
               );
             })}
