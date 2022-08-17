@@ -55,6 +55,7 @@ export async function signupUser(userName: string): Promise<DatabaseResponseEnve
     id: '1',
     playerName: userName,
     friendIds: [],
+    currentTownId: '',
   });
   return {
     databaseError: false,
@@ -253,5 +254,28 @@ export async function getFriendLists(playerName: string): Promise<DatabaseRespon
     databaseError: false,
     isOK: true,
     response: friendDetails,
+  };
+}
+
+/**
+ * Updates the town id of the player.
+ * @param playerName the name of the player whose town has to be updated
+ * @param townId the id of the town the player has joined
+ * @returns true if the town id is updated successfully.
+ */
+export async function updateTownDetailsOfPlayer(playerName: string, townId: string): Promise<DatabaseResponseEnvelope<boolean>> {
+  const playerDetails = await databaseController.findPlayerByUserName(playerName);
+  if (playerDetails === null) {
+    return {
+      databaseError: false,
+      isOK: false,
+      message: 'Player details not present to update the town id',
+    };
+  }
+  await databaseController.updatePlayerTown(playerDetails.playerName, townId);
+  return {
+    databaseError: false,
+    isOK: true,
+    response: true,
   };
 }

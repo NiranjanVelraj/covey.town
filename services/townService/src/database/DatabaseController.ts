@@ -24,6 +24,7 @@ export async function insertPlayer(player: Players): Promise<Players> {
     data: {
       playerName: player.playerName,
       friendIds: player.friendIds,
+      currentTownId: player.currentTownId,
     },
   },
   );
@@ -201,3 +202,19 @@ export async function getReceivedFriendRequestsStatus(playerName: string, status
   return sentFriendRequests;
 }
 
+/**
+ * Updates the town of the player.
+ * @param playerName the player whose town has to be updated
+ * @param townId the id of the town to be added
+ * @returns the updated player details
+ */
+export async function updatePlayerTown(playerName: string, townId: string ): Promise <Players> {
+  const updatedPlayerDetails = await prisma.players.update({
+    where: {
+      playerName,
+    }, data: {
+      currentTownId: townId,
+    },
+  });
+  return updatedPlayerDetails;
+}

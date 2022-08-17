@@ -16,6 +16,7 @@ model Players {
   playerName String @unique
   friendIds String[]
   sentFriendRequests FriendRequests[]
+  currentTownId String
 }
 
 model FriendRequests {

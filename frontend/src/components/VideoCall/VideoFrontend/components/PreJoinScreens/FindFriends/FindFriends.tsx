@@ -129,7 +129,6 @@ export default function FindFriends(props: { playerName: string }) {
       </Heading>
 
       <FormControl>
-        <FormLabel htmlFor='playerName'>Player Name: </FormLabel>
         <Input
           autoFocus
           name='playerName'
@@ -137,24 +136,28 @@ export default function FindFriends(props: { playerName: string }) {
           value={findPlayerName}
           onChange={event => setFindPlayerName(event.target.value)}
         />
-        <Flex flexDirection='column'>
-          {filteredPlayers.map(player => {
-            return (
-              <Flex alignItems='center' justifyContent='space-between' height={12}>
-                <span> {player.playerName}</span>
-                {player.status === PlayerStatus.none && (
-                  <Button onClick={() => sendFriendRequest(player.playerName)}>Send Request</Button>
-                )}
-                {player.status === PlayerStatus.sentRequest && <span>Request sent</span>}
-                {player.status === PlayerStatus.receivedRequest && (
-                  <Button onClick={() => acceptFriendRequest(player.playerName)}>
-                    Accept Request
-                  </Button>
-                )}
-              </Flex>
-            );
-          })}
-        </Flex>
+        <Box maxH='500px' overflowY='scroll'>
+          <Flex flexDirection='column'>
+            {filteredPlayers.map(player => {
+              return (
+                <Flex alignItems='center' justifyContent='space-between' height={12}>
+                  <span> {player.playerName}</span>
+                  {player.status === PlayerStatus.none && (
+                    <Button onClick={() => sendFriendRequest(player.playerName)}>
+                      Send Request
+                    </Button>
+                  )}
+                  {player.status === PlayerStatus.sentRequest && <span>Request sent</span>}
+                  {player.status === PlayerStatus.receivedRequest && (
+                    <Button onClick={() => acceptFriendRequest(player.playerName)}>
+                      Accept Request
+                    </Button>
+                  )}
+                </Flex>
+              );
+            })}
+          </Flex>
+        </Box>
       </FormControl>
     </Box>
   );

@@ -18,6 +18,7 @@ export type Players = {
   id: string;
   playerName: string;
   friendIds: string[];
+  currentTownId: string;
 };
 
 /**
@@ -46,6 +47,11 @@ export type SentFriendRequestInfo = {
 
 export type ReceivedFriendRequestInfo = {
   toPlayerName: string;
+};
+
+export type TownDetailsInfo = {
+  playerName: string;
+  townId: string;
 };
 
 export default class FriendServiceClient {
@@ -155,6 +161,17 @@ export default class FriendServiceClient {
   async acceptFreindRequest(requestData: FriendDetailInfo): Promise<boolean> {
     const responseWrapper = await this._axios.put<DatabaseResponseEnvelope<boolean>>(
       `/friends/friendRequest/accept`,
+      requestData,
+    );
+    return FriendServiceClient.unwrapOrThrowError(responseWrapper);
+  }
+
+  /**
+   * Update the current town of the player.
+   */
+  async updatePlayerTown(requestData: TownDetailsInfo): Promise<boolean> {
+    const responseWrapper = await this._axios.put<DatabaseResponseEnvelope<boolean>>(
+      `/player/town`,
       requestData,
     );
     return FriendServiceClient.unwrapOrThrowError(responseWrapper);

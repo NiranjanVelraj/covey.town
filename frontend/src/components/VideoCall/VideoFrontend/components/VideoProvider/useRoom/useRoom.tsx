@@ -39,7 +39,10 @@ export default function useRoom(
             // Reset the room only after all other `disconnected` listeners have been called.
             setTimeout(() => setRoom(null));
             window.removeEventListener('beforeunload', disconnect);
-
+            const disconnectEvent = new CustomEvent('playerDisconnected', {
+              detail: 'Remove player from town',
+            });
+            window.dispatchEvent(disconnectEvent);
             if (isMobile) {
               window.removeEventListener('pagehide', disconnect);
             }
