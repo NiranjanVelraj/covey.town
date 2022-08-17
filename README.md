@@ -35,7 +35,7 @@ To create an account and configure your local environment:
 
 ### Starting the backend
 
-Once your backend is configured, you can start it by running `npm start` in the `services/townService` directory (the first time you run it, you will also need to run `npm install`).
+Once your backend is configured, you can start it by running `npm start` in the `services/townService` directory (the first time you run it, you will also need to run `npm install` and then `npx prisma generate`).
 The backend will automatically restart if you change any of the files in the `services/townService/src` directory.
 
 ### Configuring the frontend
