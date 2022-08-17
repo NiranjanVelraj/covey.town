@@ -28,9 +28,14 @@ import FriendsApi, { Players } from '../../classes/FriendServiceClient';
 interface TownSelectionProps {
   doLogin: (initData: TownJoinResponse) => Promise<boolean>;
   userName: string;
+  friendList: Players[];
 }
 
-export default function TownSelection({ doLogin, userName }: TownSelectionProps): JSX.Element {
+export default function TownSelection({
+  doLogin,
+  userName,
+  friendList,
+}: TownSelectionProps): JSX.Element {
   // const [userName, setUserName] = useState<string>(Video.instance()?.userName || '');
   const [newTownName, setNewTownName] = useState<string>('');
   const [newTownIsPublic, setNewTownIsPublic] = useState<boolean>(true);
@@ -39,7 +44,6 @@ export default function TownSelection({ doLogin, userName }: TownSelectionProps)
   const { connect: videoConnect } = useVideoContext();
   const { apiClient } = useCoveyAppState();
   const toast = useToast();
-  const [friendList, setFriendList] = useState<Players[]>([]);
 
   const updateTownListings = useCallback(() => {
     // console.log(apiClient);
@@ -162,15 +166,11 @@ export default function TownSelection({ doLogin, userName }: TownSelectionProps)
     }
   };
 
-  useEffect(() => {
-    async function getFriendList() {
-      const friendApi = new FriendsApi();
-      const friendDetails = await friendApi.friends({ userName });
-      setFriendList(friendDetails);
-    }
-    getFriendList();
-  }, [userName]);
-
+  /**
+   * Finds the list of friends present in town.
+   * @param townId the id of the town
+   * @returns list of friend names who are present in the town
+   */
   function friendsInTown(townId: string) {
     return friendList
       .filter(friendDetails => friendDetails.currentTownId === townId)

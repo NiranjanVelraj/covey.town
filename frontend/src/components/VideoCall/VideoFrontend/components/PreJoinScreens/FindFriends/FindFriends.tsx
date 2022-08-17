@@ -2,10 +2,15 @@ import React, { useState, useEffect } from 'react';
 import { Box, Button, Flex, FormControl, FormLabel, Heading, Input } from '@chakra-ui/react';
 import FriendsApi, { FriendRequests, Players } from '../../../../../../classes/FriendServiceClient';
 
-export default function FindFriends(props: { playerName: string }) {
-  const [findPlayerName, setFindPlayerName] = useState<string>('');
-  const friendApi = new FriendsApi();
-
+export default function FindFriends(props: {
+  playerName: string;
+  allPlayers: Players[];
+  friends: Players[];
+  sentFriendRequests: FriendRequests[];
+  receivedFriendRequests: FriendRequests[];
+  sendFriendRequest: (fromPlayerName: string) => void;
+  acceptFriendRequest: (fromPlayerName: string) => void;
+}) {
   enum PlayerStatus {
     none,
     self,
@@ -18,30 +23,9 @@ export default function FindFriends(props: { playerName: string }) {
     status: PlayerStatus;
   };
 
-  const [allPlayers, setAllPlayers] = useState<PlayerDisplayDetails[]>([]);
+  const [allPlayerDetails, setAllPlayerDetails] = useState<PlayerDisplayDetails[]>([]);
   const [filteredPlayers, setFilteredPlayers] = useState<PlayerDisplayDetails[]>([]);
-
-  /**
-   * Sends a friend request to the specified player.
-   * @param toPlayerName the player to whom the request is sent
-   */
-  const sendFriendRequest = async (toPlayerName: string) => {
-    await friendApi.sendFriendRequest({
-      fromPlayerName: props.playerName,
-      toPlayerName,
-    });
-  };
-
-  /**
-   * Accepts a friend request to the specified player.
-   * @param fromPlayerName the player to whom the request is sent
-   */
-  const acceptFriendRequest = async (fromPlayerName: string) => {
-    await friendApi.acceptFreindRequest({
-      fromPlayerName,
-      toPlayerName: props.playerName,
-    });
-  };
+  const [findPlayerName, setFindPlayerName] = useState<string>('');
 
   /**
    * @returns true if there is a friend request sent to the player.
@@ -71,44 +55,30 @@ export default function FindFriends(props: { playerName: string }) {
    * Fetches the list of players from the database and updates the state.
    */
   useEffect(() => {
-    const updatePlayerList = async () => {
-      const allPlayersDetails = await friendApi.allPlayers();
-      const sentRequests = await friendApi.sentFriendRequests({ fromPlayerName: props.playerName });
-      const receivedRequests = await friendApi.receivedFriendRequests({
-        toPlayerName: props.playerName,
-      });
-      const friends = await friendApi.friends({ userName: props.playerName });
-      const playerStatus = allPlayersDetails.map(player => {
-        let playerStatus = PlayerStatus.none;
-        if (player.playerName === props.playerName) {
-          playerStatus = PlayerStatus.self;
-        } else if (sentRequest(player.playerName, sentRequests)) {
-          playerStatus = PlayerStatus.sentRequest;
-        } else if (receivedRequest(player.playerName, receivedRequests)) {
-          playerStatus = PlayerStatus.receivedRequest;
-        } else if (isFriend(player.playerName, friends)) {
-          playerStatus = PlayerStatus.friend;
-        }
-        return {
-          playerName: player.playerName,
-          status: playerStatus,
-        } as PlayerDisplayDetails;
-      });
-
-      setAllPlayers(playerStatus);
-    };
-    updatePlayerList();
-    const timer = setInterval(updatePlayerList, 2000);
-    return () => {
-      clearInterval(timer);
-    };
-  }, []);
+    const playerStatus = props.allPlayers.map(player => {
+      let playerStatus = PlayerStatus.none;
+      if (player.playerName === props.playerName) {
+        playerStatus = PlayerStatus.self;
+      } else if (isFriend(player.playerName, props.friends)) {
+        playerStatus = PlayerStatus.friend;
+      } else if (sentRequest(player.playerName, props.sentFriendRequests)) {
+        playerStatus = PlayerStatus.sentRequest;
+      } else if (receivedRequest(player.playerName, props.receivedFriendRequests)) {
+        playerStatus = PlayerStatus.receivedRequest;
+      }
+      return {
+        playerName: player.playerName,
+        status: playerStatus,
+      } as PlayerDisplayDetails;
+    });
+    setAllPlayerDetails(playerStatus);
+  }, [props.allPlayers, props.friends, props.receivedFriendRequests, props.sentFriendRequests]);
 
   /**
    * Filters the players to display only the Players searched ignoring the friends.
    */
   useEffect(() => {
-    const filteredStatus = allPlayers.filter(
+    const filteredStatus = allPlayerDetails.filter(
       player => player.status !== PlayerStatus.self && player.status !== PlayerStatus.friend,
     );
     if (findPlayerName === '') {
@@ -120,7 +90,7 @@ export default function FindFriends(props: { playerName: string }) {
         ),
       );
     }
-  }, [allPlayers, findPlayerName]);
+  }, [allPlayerDetails, findPlayerName]);
 
   return (
     <Box p='4' borderWidth='1px' borderRadius='lg'>
@@ -140,16 +110,20 @@ export default function FindFriends(props: { playerName: string }) {
           <Flex flexDirection='column'>
             {filteredPlayers.map(player => {
               return (
-                <Flex alignItems='center' justifyContent='space-between' height={12}>
+                <Flex
+                  alignItems='center'
+                  justifyContent='space-between'
+                  height={12}
+                  key={player.playerName}>
                   <span> {player.playerName}</span>
                   {player.status === PlayerStatus.none && (
-                    <Button onClick={() => sendFriendRequest(player.playerName)}>
+                    <Button onClick={() => props.sendFriendRequest(player.playerName)}>
                       Send Request
                     </Button>
                   )}
                   {player.status === PlayerStatus.sentRequest && <span>Request sent</span>}
                   {player.status === PlayerStatus.receivedRequest && (
-                    <Button onClick={() => acceptFriendRequest(player.playerName)}>
+                    <Button onClick={() => props.acceptFriendRequest(player.playerName)}>
                       Accept Request
                     </Button>
                   )}

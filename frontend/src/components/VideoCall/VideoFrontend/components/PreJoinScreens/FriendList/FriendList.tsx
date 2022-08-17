@@ -1,19 +1,7 @@
 import { Box, Heading, Table, Tbody, Td, Th, Thead, Tr } from '@chakra-ui/react';
-import React, { useState, useEffect } from 'react';
-import FriendsApi, { Players } from '../../../../../classes/FriendServiceClient';
+import { Players } from '../../../../../../classes/FriendServiceClient';
 
-export default function FriendListShow(props: { playerName: string }) {
-  const [friendList, setFriendList] = useState<Players[]>([]);
-
-  useEffect(() => {
-    async function getFriendList() {
-      const friendApi = new FriendsApi();
-      const friendDetails = await friendApi.friends({ userName: props.playerName });
-      setFriendList(friendDetails);
-    }
-    getFriendList();
-  }, []);
-
+export default function FriendList(props: { friendList: Players[] }) {
   return (
     <>
       <Heading as='h2' size='lg'>
@@ -28,7 +16,7 @@ export default function FriendListShow(props: { playerName: string }) {
             </Tr>
           </Thead>
           <Tbody>
-            {friendList.map((eachFriend, index) => (
+            {props.friendList.map((eachFriend, index) => (
               <Tr key={index}>
                 <Td role='cell'>{eachFriend.playerName}</Td>
                 <Td role='cell'>{eachFriend.currentTownId}</Td>
