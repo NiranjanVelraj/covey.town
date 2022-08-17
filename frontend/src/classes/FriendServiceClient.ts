@@ -156,11 +156,22 @@ export default class FriendServiceClient {
   }
 
   /**
-   * Fetch the list of received friend requests to a player.
+   * Accept the corresponding friend request.
    */
   async acceptFreindRequest(requestData: FriendDetailInfo): Promise<boolean> {
     const responseWrapper = await this._axios.put<DatabaseResponseEnvelope<boolean>>(
       `/friends/friendRequest/accept`,
+      requestData,
+    );
+    return FriendServiceClient.unwrapOrThrowError(responseWrapper);
+  }
+
+  /**
+   * Reject the corresponding friend request.
+   */
+  async rejectFreindRequest(requestData: FriendDetailInfo): Promise<boolean> {
+    const responseWrapper = await this._axios.put<DatabaseResponseEnvelope<boolean>>(
+      `/friends/friendRequest/reject`,
       requestData,
     );
     return FriendServiceClient.unwrapOrThrowError(responseWrapper);
