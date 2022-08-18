@@ -24,7 +24,7 @@ To create an account and configure your local environment:
 1. Go to [Twilio](https://www.twilio.com/) and create an account. You do not need to provide a credit card to create a trial account.
 2. Create an API key and secret (select "API Keys" on the left under "Settings")
 3. Create a `.env` file in the `services/townService` directory, setting the values as follows:
-4. Also setting the DATABASE_URL in the '.env' file.
+
 
 | Config Value            | Description                               |
 | ----------------------- | ----------------------------------------- |
@@ -32,10 +32,12 @@ To create an account and configure your local environment:
 | `TWILIO_API_KEY_SID`    | The SID of the new API key you created.   |
 | `TWILIO_API_KEY_SECRET` | The secret for the API key you created.   |
 | `TWILIO_API_AUTH_TOKEN` | Visible on your twilio account dashboard. |
+4. Also set the value of DATABASE_URL in the '.env' file. Specify the database connection string to the Atlas database. (For demo purposes use the following value DATABASE_URL=mongodb+srv://NiranjanVelraj:cduu8pV8PJGBNz7Y@coveytowngroup4.96ayh.mongodb.net/CoveyTown?retryWrites=true&w=majority)
 
 ### Starting the backend
-
-Once your backend is configured, you can start it by running `npm start` in the `services/townService` directory (the first time you run it, you will also need to run `npm install` and then run `npx prisma generate`).
+Navigate to `services/townService/` folder and run npm install for the first time.
+Also, run ‘npx prisma generate’ to generate the schemas for the database. This step is also required only for the first time.
+Once your backend is configured, you can start it by running `npm start` in the `services/townService` directory 
 The backend will automatically restart if you change any of the files in the `services/townService/src` directory.
 
 ### Configuring the frontend
